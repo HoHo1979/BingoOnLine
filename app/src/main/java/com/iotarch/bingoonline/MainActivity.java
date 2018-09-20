@@ -45,13 +45,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
         final TextView tvName = findViewById(R.id.tvName);
 
+        //Decouple the DataSnapShort here to MyViewModel class so the MainActivity do not need to know anything
+        //about where the data is coming from.
         MyViewModel viewModel = ViewModelProviders.of(this).get(MyViewModel.class);
-        viewModel.getFirebaseData().observe(this, new Observer<DataSnapshot>() {
+        viewModel.getUserLiveData().observe(this, new Observer<User>() {
             @Override
-            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-               User user = dataSnapshot.getValue(User.class);
-               tvName.setText(user.getAdmin());
-               Toast.makeText(MainActivity.this,user.getPassword(),Toast.LENGTH_LONG).show();
+            public void onChanged(@Nullable User user) {
+                tvName.setText(user.getAdmin());
+                Toast.makeText(MainActivity.this,user.getPassword(),Toast.LENGTH_LONG).show();
             }
         });
 
