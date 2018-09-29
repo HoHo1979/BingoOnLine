@@ -72,7 +72,7 @@ public class ReceiveFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        viewModel = ViewModelProviders.of(getActivity()).get(MyViewModel.class);
+//        viewModel = ViewModelProviders.of(getActivity()).get(MyViewModel.class);
 
     }
 
@@ -80,14 +80,14 @@ public class ReceiveFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         displayTV=view.findViewById(R.id.displayTV);
 
-        viewModel.getName().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-
-                displayTV.setText(s);
-
-            }
-        });
+//        viewModel.getName().observe(this, new Observer<String>() {
+//            @Override
+//            public void onChanged(@Nullable String s) {
+//
+//                displayTV.setText(s);
+//
+//            }
+//        });
     }
 
     @Override

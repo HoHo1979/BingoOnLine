@@ -73,7 +73,7 @@ public class InputFragment extends Fragment {
         }
 
 
-        myViewModel = ViewModelProviders.of(this).get(MyViewModel.class);
+//        myViewModel = ViewModelProviders.of(this).get(MyViewModel.class);
 
 
 
@@ -101,7 +101,7 @@ public class InputFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
 
-                myViewModel.getName().setValue(editable.toString());
+//                myViewModel.getName().setValue(editable.toString());
             }
         });
         return view;

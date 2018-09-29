@@ -1,39 +1,39 @@
 package com.iotarch.bingoonline;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.client.AuthUiInitProvider;
+import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 import com.iotarch.bingoonline.entity.User;
-import com.iotarch.bingoonline.fragment.InputFragment;
-import com.iotarch.bingoonline.fragment.ReceiveFragment;
 import com.iotarch.bingoonline.livedata.MyViewModel;
 
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener,InputFragment.OnFragmentInteractionListener,ReceiveFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener{
 
     private static final int LOGIN_CODE = 100;
+    private static final String TAG = MainActivity.class.getSimpleName() ;
+   // private MyViewModel viewModel;
+    private TextView tvName;
+    private FirebaseAuth auth;
 
 
     @Override
@@ -43,19 +43,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final TextView tvName = findViewById(R.id.tvName);
-
-        //Decouple the DataSnapShort here to MyViewModel class so the MainActivity do not need to know anything
-        //about where the data is coming from.
-        MyViewModel viewModel = ViewModelProviders.of(this).get(MyViewModel.class);
-        viewModel.getUserLiveData().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(@Nullable User user) {
-                tvName.setText(user.getAdmin());
-                Toast.makeText(MainActivity.this,user.getPassword(),Toast.LENGTH_LONG).show();
-            }
-        });
-
+        tvName = findViewById(R.id.tvName);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,20 +53,22 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                         .setAction("Action", null).show();
             }
         });
+
+        auth = FirebaseAuth.getInstance();
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseAuth.getInstance().addAuthStateListener(this);
+        auth.addAuthStateListener(this);
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        FirebaseAuth.getInstance().removeAuthStateListener(this);
+        auth.removeAuthStateListener(this);
     }
 
     @Override
@@ -88,6 +78,34 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         return true;
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode==LOGIN_CODE){
+
+            IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
+
+            if(requestCode==RESULT_OK){
+
+                goToBingoActivity();
+
+
+            }
+        }
+
+
+
+    }
+
+    private void goToBingoActivity() {
+        Intent intent = new Intent(this,BingoActivity.class);
+        intent.putExtra("USER_ID",auth.getCurrentUser().getUid());
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -95,30 +113,61 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                return true;
+            case R.id.singout:
+                AuthUI.getInstance().signOut(this);
+                break;
         }
+
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode==LOGIN_CODE){
-            Toast.makeText(this,"Login Success",Toast.LENGTH_LONG).show();
-        }
-
-    }
 
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        final FirebaseUser authUser = firebaseAuth.getCurrentUser();
 
-        if(user!=null){
+        if(authUser !=null){
+
+            //Decouple the DataSnapShort here to MyViewModel class so the MainActivity do not need to know anything
+            //about where the data is coming from.
+//            viewModel = ViewModelProviders
+//                    .of(this,new MyViewModelFactory(getApplication(), authUser.getUid()))
+//                    .get(MyViewModel.class);
+//
+
+//            //If the user has data store in database
+//            viewModel.getUserLiveData().observe(this, new Observer<User>() {
+//                @Override
+//                public void onChanged(@Nullable User user) {
+//
+//                    if(user!=null && user.getDisplayName()!=null) {
+//
+//                        tvName.setText(user.getDisplayName());
+//
+//                    }else{
+//                        //If not stored userData
+//                        //If it has user Data but doesn't have display Name show display Dialog
+                       User userData = new User();
+                       userData.setUserName(authUser.getEmail());
+                       userData.setUserID(authUser.getUid());
+                       userData.setDisplayName(authUser.getDisplayName());
+                       saveUserData(userData);
+
+                       goToBingoActivity();
+
+                       //    createDialogAndSaveUserData(userData);
+
+
+
+//                    }
+//                }
+//            });
 
 
         }else{
@@ -131,15 +180,52 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                                             new AuthUI.IdpConfig.GoogleBuilder().build()
                                     )
                             )
+                            .setIsSmartLockEnabled(false)
                     .build()
                     ,LOGIN_CODE
             );
+
         }
 
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
+
+    private void createDialogAndSaveUserData(final User userData) {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                //final View layout = getLayoutInflater().inflate(R.layout.user_info_alert,null);
+                final TextView tvName = new TextView(this);
+
+                    if(userData.getDisplayName()!=null) {
+                        tvName.setText(userData.getDisplayName());
+                    }else{
+                        tvName.setText("");
+                    }
+
+                alert.setView(tvName)
+                        .setMessage("Please Endter Display Name")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                tvName.setText(userData.getDisplayName());
+                                userData.setDisplayName(tvName.getText().toString());
+
+                                Log.d(TAG, "onClick: "+userData.getDisplayName());
+                                saveUserData(userData);
+
+                            }
+                        }).show();
+
 
     }
+
+    private void saveUserData(User userData) {
+
+        FirebaseDatabase.getInstance().getReference("Users")
+                .child(userData.getUserID())
+                .setValue(userData);
+
+    }
+
 }

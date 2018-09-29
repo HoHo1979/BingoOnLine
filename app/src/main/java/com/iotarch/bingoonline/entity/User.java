@@ -1,23 +1,47 @@
 package com.iotarch.bingoonline.entity;
 
+import com.google.firebase.database.Exclude;
+
 public class User {
 
-    String admin;
-    String password;
+    String userID;
 
-    public String getAdmin() {
-        return admin;
+    String displayName;
+
+    String userName;
+
+    int imageId;
+
+    public int getImageId() {
+        return imageId;
     }
 
-    public void setAdmin(String admin) {
-        this.admin = admin;
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
 }
