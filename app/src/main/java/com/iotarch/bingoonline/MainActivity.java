@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.iotarch.bingoonline.entity.User;
+import com.iotarch.bingoonline.firebase.DataBaseHelper;
 import com.iotarch.bingoonline.livedata.MyViewModel;
 
 import java.util.Arrays;
@@ -83,19 +84,17 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode==LOGIN_CODE){
+        if(requestCode==LOGIN_CODE){
 
             IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
 
-            if(requestCode==RESULT_OK){
+            if(resultCode==RESULT_OK){
 
                 goToBingoActivity();
 
 
             }
         }
-
-
 
     }
 
@@ -134,40 +133,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
         if(authUser !=null){
 
-            //Decouple the DataSnapShort here to MyViewModel class so the MainActivity do not need to know anything
-            //about where the data is coming from.
-//            viewModel = ViewModelProviders
-//                    .of(this,new MyViewModelFactory(getApplication(), authUser.getUid()))
-//                    .get(MyViewModel.class);
-//
 
-//            //If the user has data store in database
-//            viewModel.getUserLiveData().observe(this, new Observer<User>() {
-//                @Override
-//                public void onChanged(@Nullable User user) {
-//
-//                    if(user!=null && user.getDisplayName()!=null) {
-//
-//                        tvName.setText(user.getDisplayName());
-//
-//                    }else{
-//                        //If not stored userData
-//                        //If it has user Data but doesn't have display Name show display Dialog
                        User userData = new User();
                        userData.setUserName(authUser.getEmail());
                        userData.setUserID(authUser.getUid());
                        userData.setDisplayName(authUser.getDisplayName());
-                       saveUserData(userData);
+                       DataBaseHelper.getInstance().saveUserData(userData);
 
                        goToBingoActivity();
-
-                       //    createDialogAndSaveUserData(userData);
-
-
-
-//                    }
-//                }
-//            });
 
 
         }else{
@@ -190,42 +163,35 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
 
-    private void createDialogAndSaveUserData(final User userData) {
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                //final View layout = getLayoutInflater().inflate(R.layout.user_info_alert,null);
-                final TextView tvName = new TextView(this);
-
-                    if(userData.getDisplayName()!=null) {
-                        tvName.setText(userData.getDisplayName());
-                    }else{
-                        tvName.setText("");
-                    }
-
-                alert.setView(tvName)
-                        .setMessage("Please Endter Display Name")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                tvName.setText(userData.getDisplayName());
-                                userData.setDisplayName(tvName.getText().toString());
-
-                                Log.d(TAG, "onClick: "+userData.getDisplayName());
-                                saveUserData(userData);
-
-                            }
-                        }).show();
-
-
-    }
-
-    private void saveUserData(User userData) {
-
-        FirebaseDatabase.getInstance().getReference("Users")
-                .child(userData.getUserID())
-                .setValue(userData);
-
-    }
+//    private void createDialogAndSaveUserData(final User userData) {
+//
+//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//                //final View layout = getLayoutInflater().inflate(R.layout.user_info_alert,null);
+//                final TextView tvName = new TextView(this);
+//
+//                    if(userData.getDisplayName()!=null) {
+//                        tvName.setText(userData.getDisplayName());
+//                    }else{
+//                        tvName.setText("");
+//                    }
+//
+//                alert.setView(tvName)
+//                        .setMessage("Please Endter Display Name")
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                                tvName.setText(userData.getDisplayName());
+//                                userData.setDisplayName(tvName.getText().toString());
+//
+//                                Log.d(TAG, "onClick: "+userData.getDisplayName());
+//                                DataBaseHelper.getInstance().saveUserData(userData);
+//
+//                            }
+//                        }).show();
+//
+//
+//    }
+//
 
 }
