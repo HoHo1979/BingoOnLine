@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iotarch.bingoonline.entity.GameRoom;
 import com.iotarch.bingoonline.entity.User;
 
 import static com.firebase.ui.auth.AuthUI.TAG;
@@ -17,6 +18,8 @@ public class DataBaseHelper {
     static DataBaseHelper helper;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference userReference = database.getReference().child("Users");
+    DatabaseReference roomReference = database.getReference().child("Rooms");
+
 
     private DataBaseHelper(){
 
@@ -50,11 +53,20 @@ public class DataBaseHelper {
 
     }
 
-
     public void saveUserImage(User user) {
 
         userReference.child(user.getUserID()).child("imageId").setValue(user.getImageId());
 
     }
+
+
+    public void saveRoom(GameRoom room){
+
+        String roomKey=roomReference.push().getKey();
+        room.setRoomId(roomKey);
+        roomReference.child(roomKey).setValue(room);
+
+    }
+
 
 }

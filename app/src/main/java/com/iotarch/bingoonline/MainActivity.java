@@ -80,23 +80,23 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode==LOGIN_CODE){
-
-            IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
-
-            if(resultCode==RESULT_OK){
-
-                goToBingoActivity();
-
-
-            }
-        }
-
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if(requestCode==LOGIN_CODE){
+//
+//            IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
+//
+//            if(resultCode==RESULT_OK){
+//
+//                goToBingoActivity();
+//
+//
+//            }
+//        }
+//
+//    }
 
     private void goToBingoActivity() {
         Intent intent = new Intent(this,BingoActivity.class);

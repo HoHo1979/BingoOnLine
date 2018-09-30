@@ -2,28 +2,40 @@ package com.iotarch.bingoonline;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.iotarch.bingoonline.entity.GameRoom;
 import com.iotarch.bingoonline.entity.User;
 import com.iotarch.bingoonline.firebase.DataBaseHelper;
 import com.iotarch.bingoonline.livedata.MyViewModel;
@@ -40,10 +52,12 @@ public class BingoActivity extends AppCompatActivity {
     private TextView tvName;
     private View ivAvatar;
     private LinearLayout layoutAvatar;
+    FirebaseRecyclerAdapter adapter;
 
     Boolean isImageDisplayed = false;
 
     int [] avatars = {R.drawable.avatar_0,R.drawable.avatar_1,R.drawable.avatar_2,R.drawable.avatar_3,R.drawable.avatar_4,R.drawable.avatar_5,R.drawable.avatar_6};
+    private RecyclerView roomRecyclerView;
 
 
     @Override
@@ -80,13 +94,25 @@ public class BingoActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void findViews() {
@@ -95,6 +121,38 @@ public class BingoActivity extends AppCompatActivity {
         ivAvatar = findViewById(R.id.ivAvatar);
         layoutAvatar = findViewById(R.id.layoutAvatar);
         layoutAvatar.setVisibility(View.INVISIBLE);
+        roomRecyclerView = findViewById(R.id.roomRecyclerView);
+
+        roomRecyclerView.setHasFixedSize(true);
+        roomRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        Query query = FirebaseDatabase.getInstance().getReference().child("Rooms").limitToFirst(50);
+
+        FirebaseRecyclerOptions<GameRoom> options = new FirebaseRecyclerOptions
+                .Builder<GameRoom>()
+                .setQuery(query,GameRoom.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<GameRoom,RoomViewHolder>(options) {
+
+            @NonNull
+            @Override
+            public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.room_info,parent,false);
+                return new RoomViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull RoomViewHolder holder, int position, @NonNull GameRoom model) {
+
+                holder.bindRoom(model);
+
+            }
+        };
+
+        roomRecyclerView.setAdapter(adapter);
+
+
         ivAvatar.setOnClickListener(e->{
 
             if (isImageDisplayed != true) {
@@ -181,6 +239,32 @@ public class BingoActivity extends AppCompatActivity {
         return true;
     }
 
+
+    public void addRoom(View view){
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                //final View layout = getLayoutInflater().inflate(R.layout.user_info_alert,null);
+               EditText tvRoomName = new EditText(this);
+
+                alert.setView(tvRoomName)
+                        .setMessage("Please Enter Game Room Name")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                GameRoom room = new GameRoom();
+                                room.setOwnerId(uId);
+                                room.setRoomName(tvRoomName.getText().toString());
+                                DataBaseHelper.getInstance().saveRoom(room);
+
+                            }
+                        }).show();
+
+
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -206,5 +290,30 @@ public class BingoActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    class RoomViewHolder extends RecyclerView.ViewHolder{
+
+        private final TextView tvRoomName;
+        private final ImageView ivRoomAvatar;
+        private final TextView tvOwner;
+
+        public RoomViewHolder(View itemView) {
+            super(itemView);
+
+            tvRoomName = itemView.findViewById(R.id.tvRoomName);
+            ivRoomAvatar = itemView.findViewById(R.id.ivRoomAvatar);
+            tvOwner = itemView.findViewById(R.id.tvOwnerName);
+
+        }
+
+        public void bindRoom(GameRoom room){
+
+            tvRoomName.setText(room.getRoomName());
+
+
+        }
+    }
+
 
 }
