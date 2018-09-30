@@ -80,24 +80,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if(requestCode==LOGIN_CODE){
-//
-//            IdpResponse idpResponse = IdpResponse.fromResultIntent(data);
-//
-//            if(resultCode==RESULT_OK){
-//
-//                goToBingoActivity();
-//
-//
-//            }
-//        }
-//
-//    }
-
     private void goToBingoActivity() {
         Intent intent = new Intent(this,BingoActivity.class);
         intent.putExtra("USER_ID",auth.getCurrentUser().getUid());
@@ -162,36 +144,5 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     }
 
-
-//    private void createDialogAndSaveUserData(final User userData) {
-//
-//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//                //final View layout = getLayoutInflater().inflate(R.layout.user_info_alert,null);
-//                final TextView tvName = new TextView(this);
-//
-//                    if(userData.getDisplayName()!=null) {
-//                        tvName.setText(userData.getDisplayName());
-//                    }else{
-//                        tvName.setText("");
-//                    }
-//
-//                alert.setView(tvName)
-//                        .setMessage("Please Endter Display Name")
-//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//
-//                                tvName.setText(userData.getDisplayName());
-//                                userData.setDisplayName(tvName.getText().toString());
-//
-//                                Log.d(TAG, "onClick: "+userData.getDisplayName());
-//                                DataBaseHelper.getInstance().saveUserData(userData);
-//
-//                            }
-//                        }).show();
-//
-//
-//    }
-//
 
 }

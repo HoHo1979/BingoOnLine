@@ -33,8 +33,11 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.iotarch.bingoonline.entity.GameRoom;
 import com.iotarch.bingoonline.entity.User;
 import com.iotarch.bingoonline.firebase.DataBaseHelper;
@@ -94,13 +97,7 @@ public class BingoActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+
     }
 
     @Override
@@ -311,6 +308,7 @@ public class BingoActivity extends AppCompatActivity {
 
             tvRoomName.setText(room.getRoomName());
 
+            DataBaseHelper.getInstance().updateRoomUser(room.getOwnerId(),tvOwner,ivRoomAvatar,avatars);
 
         }
     }

@@ -1,13 +1,18 @@
 package com.iotarch.bingoonline.firebase;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iotarch.bingoonline.R;
 import com.iotarch.bingoonline.entity.GameRoom;
 import com.iotarch.bingoonline.entity.User;
 
@@ -68,5 +73,23 @@ public class DataBaseHelper {
 
     }
 
+    public void updateRoomUser(String ownerId, TextView tvOwner, ImageView ivRoomAvatar, int[] avatars) {
+
+
+        userReference.child(ownerId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                tvOwner.setText(user.getDisplayName());
+                ivRoomAvatar.setBackgroundResource(avatars[user.getImageId()]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
 }
