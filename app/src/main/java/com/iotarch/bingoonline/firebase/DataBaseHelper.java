@@ -71,6 +71,11 @@ public class DataBaseHelper {
         room.setRoomId(roomKey);
         roomReference.child(roomKey).setValue(room);
 
+        for (int i = 0; i < 25; i++) {
+            roomReference.child(roomKey).child("status/"+(i+1)).setValue(false);
+        }
+
+
     }
 
     public void updateRoomUser(String ownerId, TextView tvOwner, ImageView ivRoomAvatar, int[] avatars) {
@@ -91,5 +96,6 @@ public class DataBaseHelper {
         });
 
     }
+
 
 }

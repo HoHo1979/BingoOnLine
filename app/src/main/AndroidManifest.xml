@@ -20,6 +20,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".BingoRoomActivity"
+            android:label="@string/title_activity_bingo"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".BingoActivity"
             android:label="@string/title_activity_bingo"
             android:theme="@style/AppTheme.NoActionBar"></activity>
