@@ -2,13 +2,14 @@ package com.iotarch.bingoonline;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ActionMode;
 import android.widget.Button;
 
 public class MyButton extends android.support.v7.widget.AppCompatButton {
 
     int number;
 
-    Boolean isSelected=false;
+    boolean sel=false;
 
     public MyButton(Context context) {
         super(context);
@@ -26,11 +27,11 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
         this.number = number;
     }
 
-    public Boolean getSelected() {
-        return isSelected;
+    public boolean isSel() {
+        return sel;
     }
 
-    public void setSelected(Boolean selected) {
-        isSelected = selected;
+    public void setSel(boolean sel) {
+        this.sel = sel;
     }
 }
