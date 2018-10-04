@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class StatusViewModel extends ViewModel {
+public class NumbersViewModel extends ViewModel {
 
     DatabaseReference reference;
     FirebaseQueryLiveData firebaseData;
@@ -24,10 +24,10 @@ public class StatusViewModel extends ViewModel {
 
     LiveData<Map<String,Boolean>> status;
 
-    public StatusViewModel(Application application,String roomId){
+    public NumbersViewModel(Application application, String roomId){
 
         reference = FirebaseDatabase.getInstance().getReference();
-        Query query=reference.child("Rooms").child(roomId).child("status");
+        Query query=reference.child("Rooms").child(roomId).child("numbers");
         firebaseData = new FirebaseQueryLiveData(query);
 
     }

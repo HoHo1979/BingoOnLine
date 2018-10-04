@@ -72,7 +72,7 @@ public class DataBaseHelper {
         roomReference.child(roomKey).setValue(room);
 
         for (int i = 1; i <= 25; i++) {
-            roomReference.child(roomKey).child("status/"+(i)).setValue(false);
+            roomReference.child(roomKey).child("numbers/"+(i)).setValue(false);
         }
 
 
@@ -100,7 +100,7 @@ public class DataBaseHelper {
 
     public void updateRoomStatus(String roomId, int number, boolean b) {
 
-        roomReference.child(roomId).child("status").child(number+"").setValue(b);
+        roomReference.child(roomId).child("numbers").child(number+"").setValue(b);
 
     }
 }

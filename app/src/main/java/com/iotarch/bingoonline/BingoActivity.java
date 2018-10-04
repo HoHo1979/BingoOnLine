@@ -14,15 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.iotarch.bingoonline.firebase.DataBaseHelper;
-import com.iotarch.bingoonline.livedata.MyViewModelFactory;
-import com.iotarch.bingoonline.livedata.StatusViewModel;
-import com.iotarch.bingoonline.livedata.StatusViewModelFactory;
+import com.iotarch.bingoonline.livedata.NumbersViewModel;
+import com.iotarch.bingoonline.livedata.NumbersViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +32,7 @@ public class BingoActivity extends AppCompatActivity {
     private RecyclerView bingoRecycler;
     private TextView tvRoomName;
     List<MyButton> buttons;
-    private StatusViewModel numberViewModel;
+    private NumbersViewModel numberViewModel;
     private ButtonAdapter adapter;
 
     @Override
@@ -78,8 +75,8 @@ public class BingoActivity extends AppCompatActivity {
         tvRoomName.setText(roomName);
 
 
-        numberViewModel = ViewModelProviders.of(this,new StatusViewModelFactory(getApplication(),roomId))
-                .get(StatusViewModel.class);
+        numberViewModel = ViewModelProviders.of(this,new NumbersViewModelFactory(getApplication(),roomId))
+                .get(NumbersViewModel.class);
 
 
         numberViewModel.getFirebaseData().observe(this, new Observer<DataSnapshot>() {
@@ -90,7 +87,7 @@ public class BingoActivity extends AppCompatActivity {
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
                     String key = data.getKey();
-                    Boolean status = data.getValue(Boolean.class);
+                    Boolean numberState = data.getValue(Boolean.class);
 
 
                     for (MyButton button : buttons) {
@@ -98,9 +95,9 @@ public class BingoActivity extends AppCompatActivity {
                        Integer number=button.getNumber();
                        Integer intKey = Integer.parseInt(key);
 
-                       if(number.equals(intKey)&&status!=null) {
-                           button.setSelected(status);
-                           button.setSel(status);
+                       if(number.equals(intKey)&&numberState!=null) {
+                           button.setSelected(numberState);
+                           button.setSel(numberState);
                        }
 
                     }
