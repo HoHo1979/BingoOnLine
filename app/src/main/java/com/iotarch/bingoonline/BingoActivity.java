@@ -61,6 +61,18 @@ public class BingoActivity extends AppCompatActivity {
 
         String roomName = getIntent().getStringExtra("ROOM_NAME");
         String roomId = getIntent().getStringExtra("ROOM_ID");
+        Boolean isCreator=getIntent().getBooleanExtra("IS_CREATOR",false);
+
+
+        if(isCreator){
+
+
+        }else{
+
+
+
+        }
+
 
 
         tvRoomName.setText(roomName);

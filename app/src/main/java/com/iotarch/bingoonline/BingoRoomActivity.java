@@ -286,6 +286,7 @@ public class BingoRoomActivity extends AppCompatActivity {
         private final ImageView ivRoomAvatar;
         private final TextView tvOwner;
         String roomId;
+        Boolean isCreator=false;
 
         public RoomViewHolder(View itemView) {
             super(itemView);
@@ -306,6 +307,11 @@ public class BingoRoomActivity extends AppCompatActivity {
                             Log.d(TAG, "onClick: "+roomId);
                     }
 
+                    if(isCreator){
+                        intent.putExtra("IS_CREATOR",true);
+                        Log.d(TAG, "onClick: creator true");
+                    }
+
                     startActivity(intent);
 
                 }
@@ -320,6 +326,13 @@ public class BingoRoomActivity extends AppCompatActivity {
             DataBaseHelper.getInstance().updateRoomUser(room.getOwnerId(),tvOwner,ivRoomAvatar,avatars);
 
             roomId = room.getRoomId();
+
+
+            if(room.getOwnerId().equals(uId)){
+                isCreator=true;
+            }
+
+
         }
     }
 
